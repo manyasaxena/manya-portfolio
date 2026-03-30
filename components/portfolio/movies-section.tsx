@@ -27,37 +27,33 @@ function extractTitle(rawTitle?: string): string {
 function extractYear(pubDate?: string): string {
   if (!pubDate) return "";
   const parsed = new Date(pubDate);
-  if (Number.isNaN(parsed.getTime())) return "";
-  return String(parsed.getFullYear());
+  return !isNaN(parsed.getTime()) ? String(parsed.getFullYear()) : "";
 }
 
-function extractRating(item: Record<string, unknown>, title?: string): number | undefined {
+function extractRating(item: Record<string, any>, title?: string): number | undefined {
   const memberRating = item["letterboxd:memberRating"];
-  if (typeof memberRating === "string") {
-    const parsed = Number(memberRating);
-    if (!Number.isNaN(parsed)) return parsed;
-  }
-
+  if (memberRating) return Number(memberRating);
+  
   if (title) {
     const stars = (title.match(/★/g) || []).length;
     const hasHalf = title.includes("½");
     if (stars > 0 || hasHalf) return stars + (hasHalf ? 0.5 : 0);
   }
-
   return undefined;
 }
 
 async function getRecentMovies(): Promise<Movie[]> {
   try {
-    const response = await fetch(FEED_URL, { cache: "no-store" });
+    const response = await fetch(FEED_URL, { next: { revalidate: 3600 } }); // Cache for 1 hour
     if (!response.ok) return [];
 
     const xml = await response.text();
     const parser = new Parser();
     const feed = await parser.parseString(xml);
 
-    return (feed.items ?? []).slice(0, 4).map((item, index) => {
-      const raw = item as Record<string, unknown>;
+    // CHANGED: slice(0, 7) to get exactly seven movies
+    return (feed.items ?? []).slice(0, 7).map((item, index) => {
+      const raw = item as any;
       return {
         id: item.guid || item.link || String(index),
         title: extractTitle(item.title),
@@ -74,106 +70,80 @@ async function getRecentMovies(): Promise<Movie[]> {
 export async function MoviesSection() {
   const recentMovies = await getRecentMovies();
 
-  // Added id="movies" here to link up with the navigation button!
   return (
-    <section id="movies" className="py-14 md:py-20 opacity-65 hover:opacity-100 transition-opacity duration-500">
+    <section id="movies" className="py-14 md:py-20 opacity-90 hover:opacity-100 transition-opacity duration-500">
       <div className="max-w-5xl mx-auto px-6">
         
-        {/* Section header & Intro */}
+        {/* Header Section */}
         <div className="mb-12 flex flex-col gap-6">
-          {/* Title and Line */}
           <div className="flex items-center gap-5">
             <h2 className="whitespace-nowrap font-serif text-4xl md:text-5xl text-foreground/85">My film diary</h2>
-            
             <a 
               href={LETTERBOXD_PROFILE_URL} 
               target="_blank" 
               rel="noreferrer"
               className="group flex flex-1 items-center gap-4"
-              title="View my Letterboxd profile"
             >
-              {/* UNIFORM Purple Line */}
-              <div className="h-px flex-1 bg-purple-200 transition-all duration-500 group-hover:bg-purple-400 group-hover:shadow-[0_0_12px_rgba(168,85,247,0.4)]" />
-              
-              {/* The Letterboxd Label */}
-              <span className="flex items-center gap-1 text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground/60 transition-colors duration-300 group-hover:text-purple-600">
+              <div className="h-px flex-1 bg-purple-200/50 transition-all duration-500 group-hover:bg-purple-400 group-hover:shadow-[0_0_12px_rgba(168,85,247,0.4)]" />
+              <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground/50 transition-colors duration-300 group-hover:text-purple-600">
                 Letterboxd
-                <ArrowUpRight className="-ml-0.5 h-3 w-3 opacity-0 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100" />
+                <ArrowUpRight className="h-3 w-3 opacity-0 transition-all duration-300 group-hover:opacity-100" />
               </span>
             </a>
           </div>
 
-          {/* Personalized Subheader */}
-          <p className="w-full text-sm leading-relaxed text-muted-foreground/80 md:text-base">
-          Whether it’s a blockbuster, speculative sci-fi, animation, or an A24 film, I’m drawn to movies with compelling characters that either make me feel something deeply or let my imagination run free; leaving me with new perspectives, possibilities, and something to carry with me.
+          <p className="max-w-4xl text-sm leading-relaxed text-muted-foreground/80 md:text-base">
+            Whether it’s a blockbuster, speculative sci-fi, animation, or an A24 film, I’m drawn to movies with compelling characters that either make me feel something deeply or let my imagination run free...
           </p>
         </div>
 
-        {/* Movie posters - styled like vintage film reels on a shelf */}
-        <div className="relative">
-          {/* Shelf shadow */}
-          <div className="absolute bottom-0 left-0 right-0 h-3 bg-gradient-to-t from-black/10 to-transparent" />
-          
-          <div className="flex gap-5 overflow-x-auto pb-6 scrollbar-hide">
-            {recentMovies.map((movie) => (
-              <article
-                key={movie.id}
-                className="group relative flex-shrink-0 w-28 md:w-32 rounded-2xl border border-white/50 bg-white/40 p-2 shadow-xl backdrop-blur-md"
-              >
-                {/* Poster */}
-                <div className="relative aspect-[2/3] overflow-hidden rounded-xl group-hover:-translate-y-1 transition-all duration-300">
-                  <Image
-                    src={movie.poster}
-                    alt={movie.title}
-                    fill
-                    unoptimized
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  
-                  {/* Film grain overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent mix-blend-overlay" />
-                  
-                  {/* Vintage edge effect */}
-                  <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.3)]" />
-                  
-                  {/* Hover overlay - Updated to a dark black gradient for contrast */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-                  
-                  {/* Rating on hover - Updated with standard Tailwind yellow colors */}
-                  {movie.rating !== undefined && (
-                    <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                      {Array.from({ length: 5 }).map((_, i) => {
-                        const full = i + 1 <= Math.floor(movie.rating as number);
-                        const half = !full && i + 0.5 === movie.rating;
-                        return (
-                          <Star
-                            key={i}
-                            className={`w-3.5 h-3.5 text-yellow-400 ${
-                              full 
-                                ? "fill-yellow-400" 
-                                : half 
-                                  ? "fill-yellow-400/50" 
-                                  : "fill-transparent opacity-40 text-yellow-400/50"
-                            }`}
-                          />
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+        {/* CHANGED: Grid Layout for exactly 7 items */}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-7 lg:gap-3">
+          {recentMovies.map((movie) => (
+            <article
+              key={movie.id}
+              className="group relative flex flex-col rounded-xl border border-white/40 bg-white/30 p-1.5 shadow-sm backdrop-blur-sm transition-all duration-300 hover:shadow-md hover:bg-white/50"
+            >
+              {/* Poster Container */}
+              <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
+                <Image
+                  src={movie.poster}
+                  alt={movie.title}
+                  fill
+                  unoptimized
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                
+                {/* Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
+                {/* Rating - scaled down for small grid items */}
+                {movie.rating !== undefined && (
+                  <div className="absolute bottom-2 left-0 right-0 flex items-center justify-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-2.5 h-2.5 ${
+                          i + 1 <= movie.rating! ? "fill-yellow-400 text-yellow-400" : "text-white/20"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
 
-                {/* Title with typewriter feel */}
-                <div className="mt-3 px-0.5">
-                  <h3 className="text-xs text-foreground/60 group-hover:text-foreground/90 transition-colors truncate font-medium">
-                    {movie.title}
-                  </h3>
-                  <span className="text-xs text-muted-foreground/40">
-                    {movie.year}
-                  </span>
+              {/* Title Info - Tiny text to fit the narrow columns */}
+              <div className="mt-2 flex flex-col px-0.5">
+                <h3 className="truncate text-[10px] font-medium text-foreground/70 group-hover:text-foreground">
+                  {movie.title}
+                </h3>
+                <div className="flex justify-between text-[9px] text-muted-foreground/50">
+                  <span>{movie.year}</span>
+                  <span>2026</span>
                 </div>
-              </article>
-            ))}
-          </div>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
