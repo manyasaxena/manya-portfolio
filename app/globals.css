@@ -1,26 +1,86 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap');
+@import 'tailwindcss';
+
+html {
+  scroll-behavior: smooth;
+}
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* All original theme colors restored so your cards/books work! */
+  --background: oklch(0.98 0.008 100);
+  --foreground: oklch(0.22 0.02 280);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.02 280);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.02 280);
+  --primary: oklch(0.48 0.24 290);
+  --primary-foreground: oklch(0.99 0.01 100);
+  --secondary: oklch(0.94 0.03 280);
+  --secondary-foreground: oklch(0.28 0.04 280);
+  --muted: oklch(0.94 0.02 100);
+  --muted-foreground: oklch(0.45 0.03 280);
+  --accent: oklch(0.92 0.06 45);
+  --accent-foreground: oklch(0.25 0.04 45);
+  --warm: oklch(0.88 0.08 45);
+  --warm-foreground: oklch(0.28 0.05 40);
+  --border: oklch(0.90 0.02 280);
+  --radius: 0.5rem;
 }
 
 body {
-  background: var(--background);
+  min-height: 100vh;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #fafafa;
+  background-image: none !important;
+}
+
+.font-marker {
+  font-family: 'Caveat Brush', cursive;
+}
+
+@keyframes blur-in { from { filter: blur(10px); opacity: 0; } to { filter: blur(0); opacity: 1; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+.animate-blur-in { animation: blur-in 1.5s ease-out both; }
+.animate-fade-in { animation: fade-in 1.5s ease-out both; }
+
+/* Book Spines Restored */
+.book-spine-1 { background: linear-gradient(180deg, oklch(0.52 0.22 290), oklch(0.42 0.20 285)); }
+.book-spine-2 { background: linear-gradient(180deg, oklch(0.72 0.14 45), oklch(0.62 0.12 40)); }
+.book-spine-3 { background: linear-gradient(180deg, oklch(0.72 0.12 150), oklch(0.62 0.10 145)); }
+.book-spine-4 { background: linear-gradient(180deg, oklch(0.50 0.16 320), oklch(0.42 0.14 315)); }
+
+.library-spine {
+  position: relative;
+}
+
+.library-spine::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, oklch(0.48 0.22 290), oklch(0.40 0.18 285));
+  border-radius: 2px 0 0 2px;
+}
+
+/* 1. Low, soft gradient */
+.mesh-gradient-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%; /* Keeps it low on the screen */
+  z-index: 0;
+  pointer-events: none;
+  background-image: 
+    radial-gradient(at 50% 100%, rgba(162, 84, 179, 0.522) 0px, transparent 75%), /* Softened Purple */
+    radial-gradient(at 90% 100%, rgba(56, 219, 248, 0.299) 0px, transparent 55%),  /* Softened Blue */
+    radial-gradient(at 30% 100%, rgba(252, 150, 67, 0.374) 0px, transparent 55%);  /* Softened Orange */
+  filter: blur(60px);
 }
