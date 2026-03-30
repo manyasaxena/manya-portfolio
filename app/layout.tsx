@@ -15,9 +15,30 @@ const sourceSans = Source_Sans_3({
 });
 
 export const metadata: Metadata = {
+  // This helps Next.js create the correct absolute URL for your image!
+  metadataBase: new URL('https://manya-portfolio-one.vercel.app'),
   title: 'Manya Saxena — Designer',
   description: 'UX and HCI designer passionate about creating digital spaces that feel more human and intentional.',
   generator: 'v0.app',
+  
+  // This tells LinkedIn, iMessage, and Twitter exactly what to display
+  openGraph: {
+    title: 'Manya Saxena — Designer',
+    description: 'UX and HCI designer passionate about creating digital spaces that feel more human and intentional.',
+    url: 'https://manya-portfolio-one.vercel.app',
+    siteName: 'Manya Saxena Portfolio',
+    images: [
+      {
+        url: '/og-image.png', // Grabs the image straight from your public folder
+        width: 1200,
+        height: 630,
+        alt: 'Manya Saxena Portfolio Preview',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  
   icons: {
     icon: [
       {
