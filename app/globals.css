@@ -8,8 +8,7 @@ html {
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* All original theme colors restored so your cards/books work! */
-  --background: oklch(0.98 0.008 100);
+  --background: #fafafa;
   --foreground: oklch(0.22 0.02 280);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.22 0.02 280);
@@ -35,24 +34,84 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #fafafa;
-  background-image: none !important;
 }
 
+/* Custom Typography Engine */
 .font-marker {
   font-family: 'Caveat Brush', cursive;
 }
 
-@keyframes blur-in { from { filter: blur(10px); opacity: 0; } to { filter: blur(0); opacity: 1; } }
-@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+/* --- ANIMATION PHYSICS MODULE --- */
+
+/* Liquid bubble gelatin warping effect */
+@keyframes liquidBubbleIn {
+  0% {
+    opacity: 0;
+    transform: translateY(60px) scaleY(0.85) scaleX(1.05);
+  }
+  45% {
+    transform: translateY(-10px) scaleY(1.04) scaleX(0.96);
+  }
+  70% {
+    transform: translateY(4px) scaleY(0.98) scaleX(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1) scaleX(1);
+  }
+}
+
+.animate-liquid-bubble {
+  animation: liquidBubbleIn 1.1s cubic-bezier(0.25, 1.1, 0.4, 1) forwards;
+}
+
+/* Header Text Effects */
+@keyframes blur-in { 
+  from { filter: blur(10px); opacity: 0; } 
+  to { filter: blur(0); opacity: 1; } 
+}
+@keyframes fade-in { 
+  from { opacity: 0; transform: translateY(10px); } 
+  to { opacity: 1; transform: translateY(0); } 
+}
 
 .animate-blur-in { animation: blur-in 1.5s ease-out both; }
-.animate-fade-in { animation: fade-in 1.5s ease-out both; }
+.animate-fade-in { animation: fade-in 1.2s ease-out both; }
 
-/* Book Spines Restored */
+/* Ambient background blob drift — lively, non-synchronized bounce-and-shift */
+@keyframes driftA {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(6vw, -4vh) scale(1.12); }
+  50% { transform: translate(9vw, 5vh) scale(0.9); }
+  75% { transform: translate(-3vw, 6vh) scale(1.05); }
+}
+@keyframes driftB {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-7vw, 5vh) scale(0.88); }
+  50% { transform: translate(-4vw, -6vh) scale(1.1); }
+  75% { transform: translate(5vw, -3vh) scale(0.95); }
+}
+@keyframes driftC {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(7vw, 4vh) scale(1.1); }
+  50% { transform: translate(2vw, -6vh) scale(0.92); }
+  75% { transform: translate(-6vw, -2vh) scale(1.06); }
+}
+@keyframes driftD {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-6vw, -5vh) scale(0.88); }
+  50% { transform: translate(-8vw, 3vh) scale(1.08); }
+  75% { transform: translate(4vw, 6vh) scale(0.94); }
+}
+
+
+/* --- PROJECT INDEX VISUAL ARCHITECTURE --- */
+
+/* Bookshelf Spines Restored */
 .book-spine-1 { background: linear-gradient(180deg, oklch(0.52 0.22 290), oklch(0.42 0.20 285)); }
-.book-spine-2 { background: linear-gradient(180deg, oklch(0.72 0.14 45), oklch(0.62 0.12 40)); }
+.book-spine-tech4good { background: linear-gradient(180deg, oklch(0.62 0.16 235), oklch(0.52 0.18 230)); }
 .book-spine-3 { background: linear-gradient(180deg, oklch(0.72 0.12 150), oklch(0.62 0.10 145)); }
-.book-spine-4 { background: linear-gradient(180deg, oklch(0.50 0.16 320), oklch(0.42 0.14 315)); }
+.book-spine-globallogic { background: linear-gradient(180deg, oklch(0.70 0.18 50), oklch(0.60 0.16 45)); }
 
 .library-spine {
   position: relative;
@@ -69,18 +128,21 @@ body {
   border-radius: 2px 0 0 2px;
 }
 
-/* 1. Low, soft gradient */
+
+/* --- BACKGROUND AMBIENT RENDERING --- */
+
+/* Low, soft fluid canvas back-gradient */
 .mesh-gradient-container {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 40%; /* Keeps it low on the screen */
+  height: 40%;
   z-index: 0;
   pointer-events: none;
   background-image: 
-    radial-gradient(at 50% 100%, rgba(162, 84, 179, 0.522) 0px, transparent 75%), /* Softened Purple */
-    radial-gradient(at 90% 100%, rgba(56, 219, 248, 0.299) 0px, transparent 55%),  /* Softened Blue */
-    radial-gradient(at 30% 100%, rgba(252, 150, 67, 0.374) 0px, transparent 55%);  /* Softened Orange */
+    radial-gradient(at 50% 100%, rgba(162, 84, 179, 0.522) 0px, transparent 75%), 
+    radial-gradient(at 90% 100%, rgba(56, 219, 248, 0.299) 0px, transparent 55%),  
+    radial-gradient(at 30% 100%, rgba(252, 150, 67, 0.374) 0px, transparent 55%);  
   filter: blur(60px);
 }

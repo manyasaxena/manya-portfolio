@@ -17,9 +17,8 @@ export default function Footer() {
 
         {/* Right Side: Contact & Socials */}
         <div className="flex flex-col items-center gap-4 md:items-end">
-          <a 
-            // DON'T FORGET: Swap this placeholder out for your real email!
-            href="mailto:your.email@example.com" 
+          <a
+            href="mailto:manyasaxena@gmail.com"
             className="group relative font-medium text-neutral-600 transition-colors hover:text-purple-700"
           >
             Say hello ↗

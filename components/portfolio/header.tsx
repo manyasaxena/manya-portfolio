@@ -1,7 +1,37 @@
+"use client"; // Required for useState and useEffect hooks
+
 import Image from "next/image";
 import { ArrowDown } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export function Header() {
+  const words = ["builder", "thinker", "designer", "dreamer"];
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [fadeState, setFadeState] = useState("translate-y-0 opacity-100");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // 1. Start exit animation (slide up and fade out)
+      setFadeState("-translate-y-4 opacity-0");
+
+      setTimeout(() => {
+        // 2. Swap the word while hidden
+        setCurrentWordIndex((prevIndex) => (prevIndex + 1) % words.length);
+        
+        // 3. Snap down to the bottom instantly to prepare for entry
+        setFadeState("translate-y-4 opacity-0");
+
+        // 4. Slide up into its natural center position and fade back in
+        setTimeout(() => {
+          setFadeState("translate-y-0 opacity-100");
+        }, 50); 
+      }, 300); // Matches the duration-300 transition time
+
+    }, 2500); // Changes words every 2.5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <header className="relative w-full min-h-screen overflow-hidden px-6 sm:px-8 bg-white flex items-center">
       
@@ -43,11 +73,20 @@ export function Header() {
               {"I'm Manya,"}
             </span>
           </p>
-          <p className="max-w-md text-base leading-relaxed text-neutral-700 sm:text-lg">
-            a designer passionate about using UX and HCI to create digital
-            spaces that feel more human and intentional.
-          </p>
-
+          
+          {/* Main Description with shifting word container */}
+<p className="max-w-md text-base leading-relaxed text-neutral-700 sm:text-lg">
+  a
+  <span className="inline-block overflow-hidden h-[1.3em] min-w-[90px] align-middle relative top-[1px] pl-3">
+    <span
+      className={`absolute inset-x-0 bottom-[-1px] pl-3 font-medium italic text-[#8b2284] pr-2 transform transition-all duration-300 ease-in-out ${fadeState}`}
+    >
+      {words[currentWordIndex]}
+    </span>
+  </span>
+  passionate about leveraging human-computer interaction and cognitive insight
+  to turn abstract ideas into user-first realities.
+</p>
           <div className="animate-fade-in pt-4 flex flex-wrap items-center gap-4">
             <a
               href="#projects"
