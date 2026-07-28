@@ -38,6 +38,132 @@ export function BubbleScrollSection({ children, delayClass = "" }: { children: R
   );
 }
 
+// Very slow fade reveal — phone interfaces gently fade into view on scroll (no slide, no bounce)
+export function FadeInSection({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const [isVisible, setIsVisible] = useState(false);
+  const elementRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -120px 0px"
+      }
+    );
+
+    if (elementRef.current) observer.observe(elementRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={elementRef}
+      className={`transition-opacity duration-[3500ms] ease-out ${isVisible ? "opacity-100" : "opacity-0"} ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+// Gentle slide-up + fade reveal — text content rises slowly from below on scroll into view
+export function SlideUpSection({
+  children,
+  delay = 0,
+  duration = 1200,
+  className = "",
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  duration?: number;
+  className?: string;
+}) {
+  const [isVisible, setIsVisible] = useState(false);
+  const elementRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -40px 0px"
+      }
+    );
+
+    if (elementRef.current) observer.observe(elementRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // The observed wrapper stays in its natural position; only the inner child is
+  // transformed. (Observing a translated element can push it below the viewport
+  // so the observer never fires — this keeps the trigger reliable at page edges.)
+  return (
+    <div ref={elementRef} className={className}>
+      <div
+        style={{ transitionDelay: `${delay}ms`, transitionDuration: `${duration}ms` }}
+        className={`transition-all ease-[cubic-bezier(0.34,1.32,0.46,1)] ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-24"
+        }`}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Pure opacity fade (no slide) with a configurable delay — used to reveal text only
+// after a preceding staggered animation (e.g. a row of bubbles) has fully settled.
+export function FadeRevealSection({
+  children,
+  delay = 0,
+  duration = 2600,
+  className = "",
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  duration?: number;
+  className?: string;
+}) {
+  const [isVisible, setIsVisible] = useState(false);
+  const elementRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -40px 0px"
+      }
+    );
+
+    if (elementRef.current) observer.observe(elementRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={elementRef} className={className}>
+      <div
+        style={{ transitionDelay: `${delay}ms`, transitionDuration: `${duration}ms` }}
+        className={`transition-opacity ease-out ${isVisible ? "opacity-100" : "opacity-0"}`}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
 // Special Horizontal Scroll Observer for accent bubbles to slide in from the left
 export function SlideFromLeftSection({ children }: { children: React.ReactNode }) {
   const [isVisible, setIsVisible] = useState(false);

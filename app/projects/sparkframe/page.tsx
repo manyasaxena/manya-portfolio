@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Sparkles, ChevronRight, ChevronLeft, X } from "lucide-react";
 import { useState, useEffect, useRef, Fragment } from "react";
-import { BubbleScrollSection, SlideFromLeftSection } from "@/components/portfolio/scroll-reveal";
+import { BubbleScrollSection, SlideFromLeftSection, FadeInSection } from "@/components/portfolio/scroll-reveal";
 
 function ScreenCarousel({ screens }: { screens: { label: string; src: string }[] }) {
   const [index, setIndex] = useState(0);
@@ -585,19 +585,21 @@ export default function Tech4GoodProjectPage() {
                       INTERACTIVE VIDEO WALKTHROUGH
                     </span>
 
-                    <div
-                      className="relative rounded-[2.75rem] border-[10px] border-neutral-800 bg-neutral-950 shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden flex-shrink-0 mx-auto"
-                      style={{ width: "312px", height: "672px" }}
-                    >
-                      <video
-                        src="/projects/tech4goodContent/videos/citypet-walkthrough.mp4"
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
+                    <FadeInSection>
+                      <div
+                        className="relative rounded-[2.75rem] border-[10px] border-neutral-800 bg-neutral-950 shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden flex-shrink-0 mx-auto"
+                        style={{ width: "312px", height: "672px" }}
+                      >
+                        <video
+                          src="/projects/tech4goodContent/videos/citypet-walkthrough.mp4"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    </FadeInSection>
                   </div>
 
                   {/* Right Column: Staggered Design-Choice Callouts */}
@@ -683,8 +685,8 @@ export default function Tech4GoodProjectPage() {
                 </div>
               </BubbleScrollSection>
 
-              {/* Single Phone Carousel */}
-              <BubbleScrollSection delayClass="[animation-delay:225ms]">
+              {/* Single Phone Carousel — slow fade reveal on scroll */}
+              <FadeInSection>
                 <div className="pt-4">
                   <span className="text-xs font-bold uppercase tracking-widest text-cyan-600 block text-center mb-6">
                     SCREEN CONCEPTS
@@ -700,7 +702,7 @@ export default function Tech4GoodProjectPage() {
                     ]}
                   />
                 </div>
-              </BubbleScrollSection>
+              </FadeInSection>
 
             </section>
           </div>
