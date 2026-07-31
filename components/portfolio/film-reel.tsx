@@ -28,8 +28,8 @@ export interface ReelMovie {
   link: string;
 }
 
-const FRAME_WIDTH_CLASS = "w-32 sm:w-40 md:w-44";
-const FRAME_PADDING_CLASS = "px-[calc(50%-4rem)] sm:px-[calc(50%-5rem)] md:px-[calc(50%-5.5rem)]";
+const FRAME_WIDTH_CLASS = "w-28 sm:w-36 md:w-40";
+const FRAME_PADDING_CLASS = "px-[calc(50%-3.5rem)] sm:px-[calc(50%-4.5rem)] md:px-[calc(50%-5rem)]";
 
 // Dark brown film stock for the strip band — the site's existing dark warm
 // token, used directly rather than a lighter wash.
@@ -165,7 +165,7 @@ export function FilmReel({ movies }: { movies: ReelMovie[] }) {
     >
       <SprocketStrip />
 
-      <div className="relative py-8 sm:py-10" style={{ backgroundColor: FILM_STRIP_BG }}>
+      <div className="relative py-6 sm:py-8" style={{ backgroundColor: FILM_STRIP_BG }}>
         {/* The gate — a fixed lit window in the horizontal center */}
         <div
           aria-hidden="true"
@@ -175,7 +175,7 @@ export function FilmReel({ movies }: { movies: ReelMovie[] }) {
 
         <div
           ref={scrollRef}
-          className={`flex snap-x snap-mandatory gap-3 overflow-x-auto sm:gap-4 ${FRAME_PADDING_CLASS} cursor-grab active:cursor-grabbing [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
+          className={`flex snap-x snap-mandatory gap-2.5 overflow-x-auto sm:gap-3 ${FRAME_PADDING_CLASS} cursor-grab active:cursor-grabbing [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
           style={{ scrollBehavior: reducedMotion ? "auto" : "smooth" }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
@@ -241,7 +241,7 @@ export function FilmReel({ movies }: { movies: ReelMovie[] }) {
       <SprocketStrip />
 
       {/* Position dots */}
-      <div className="flex flex-wrap items-center justify-center gap-1.5 bg-[#F5EFE1] px-4 pb-4 pt-3">
+      <div className="flex flex-wrap items-center justify-center gap-1.5 bg-[#F5EFE1] px-4 pb-3 pt-2">
         {movies.map((movie, index) => (
           <button
             key={movie.id}
@@ -259,37 +259,37 @@ export function FilmReel({ movies }: { movies: ReelMovie[] }) {
       </div>
 
       {/* Active film detail panel */}
-      <div className="border-t border-[#E7DFCC] bg-[#F5EFE1] px-6 py-8 sm:px-10">
+      <div className="border-t border-[#E7DFCC] bg-[#F5EFE1] px-6 py-6 sm:px-8">
         <div aria-live="polite" className="sr-only">
           {active.title}
           {active.year ? `, ${active.year}` : ""}
           {active.rating !== undefined ? `, rated ${active.rating} out of 5 stars` : ""}
         </div>
 
-        <div className="mx-auto max-w-xl text-center">
+        <div className="mx-auto max-w-lg text-center">
           <a
             href={active.link}
             target="_blank"
             rel="noreferrer"
-            className="inline-block font-serif text-2xl text-[var(--warm-foreground)] transition-colors hover:text-[var(--accent-foreground)] sm:text-3xl"
+            className="inline-block font-serif text-xl text-[var(--warm-foreground)] transition-colors hover:text-[var(--accent-foreground)] sm:text-2xl"
           >
             {active.title}
             {active.year && (
-              <span className="ml-2 font-sans text-lg font-normal text-[var(--muted-foreground)] sm:text-xl">
+              <span className="ml-2 font-sans text-base font-normal text-[var(--muted-foreground)] sm:text-lg">
                 {active.year}
               </span>
             )}
           </a>
 
           {active.rating !== undefined && (
-            <div className="mt-3 flex justify-center">
+            <div className="mt-2.5 flex justify-center">
               <StarRating rating={active.rating} />
             </div>
           )}
 
           {active.review && (
             <div
-              className="mt-5 font-serif text-lg leading-relaxed text-[var(--warm-foreground)]/80 sm:text-xl [&_a]:underline [&_a]:decoration-[var(--warm-foreground)]/30 [&_p+p]:mt-3"
+              className="mt-4 font-serif text-base leading-relaxed text-[var(--warm-foreground)]/80 sm:text-lg [&_a]:underline [&_a]:decoration-[var(--warm-foreground)]/30 [&_p+p]:mt-3"
               dangerouslySetInnerHTML={{ __html: active.review }}
             />
           )}
