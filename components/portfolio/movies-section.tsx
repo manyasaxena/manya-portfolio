@@ -1,7 +1,7 @@
-import Image from "next/image";
-import { Star, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Parser from "rss-parser";
 import sanitizeHtml from "sanitize-html";
+import { FilmReel } from "@/components/portfolio/film-reel";
 
 interface Movie {
   id: string;
@@ -12,6 +12,8 @@ interface Movie {
   review?: string;
   link: string;
 }
+
+type RawFeedItem = Parser.Item & { "letterboxd:memberRating"?: string };
 
 const FEED_URL = "https://letterboxd.com/ms03flm/rss/";
 const LETTERBOXD_PROFILE_URL = "https://letterboxd.com/ms03flm/";
@@ -49,9 +51,14 @@ function extractReview(description: string): string | undefined {
   return textOnly.length > 0 ? sanitized : undefined;
 }
 
+// Letterboxd's <title> is "{Film Title}, {Year} - {star rating}", e.g.
+// "Black Mirror: Eulogy, 2025 - ★★★★". Strip the trailing ", year - stars"
+// suffix rather than anything before a colon — the film title itself may
+// contain one (as above), and a leading-prefix strip would eat it.
 function extractTitle(rawTitle?: string): string {
   if (!rawTitle) return "Untitled";
-  return rawTitle.replace(/^[^:]+:\s*/, "").trim() || rawTitle;
+  const match = rawTitle.match(/^(.*),\s*\d{4}\s*-\s*[★½]*\s*$/);
+  return (match?.[1] ?? rawTitle).trim();
 }
 
 function extractYear(pubDate?: string): string {
@@ -60,7 +67,7 @@ function extractYear(pubDate?: string): string {
   return !isNaN(parsed.getTime()) ? String(parsed.getFullYear()) : "";
 }
 
-function extractRating(item: Record<string, any>, title?: string): number | undefined {
+function extractRating(item: RawFeedItem, title?: string): number | undefined {
   const memberRating = item["letterboxd:memberRating"];
   if (memberRating) return Number(memberRating);
   
@@ -82,7 +89,7 @@ async function getRecentMovies(): Promise<Movie[]> {
     const feed = await parser.parseString(xml);
 
     return (feed.items ?? []).slice(0, 20).map((item, index) => {
-      const raw = item as any;
+      const raw = item as RawFeedItem;
       const description = item.content || item.summary || "";
       return {
         id: item.guid || item.link || String(index),
@@ -129,54 +136,7 @@ export async function MoviesSection() {
           </p>
         </div>
 
-        {/* CHANGED: Grid Layout for exactly 7 items */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-7 lg:gap-3">
-          {recentMovies.map((movie) => (
-            <article
-              key={movie.id}
-              className="group relative flex flex-col rounded-xl border border-white/40 bg-white/30 p-1.5 shadow-sm backdrop-blur-sm transition-all duration-300 hover:shadow-md hover:bg-white/50"
-            >
-              {/* Poster Container */}
-              <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
-                <Image
-                  src={movie.poster}
-                  alt={movie.title}
-                  fill
-                  unoptimized
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                
-                {/* Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                
-                {/* Rating - scaled down for small grid items */}
-                {movie.rating !== undefined && (
-                  <div className="absolute bottom-2 left-0 right-0 flex items-center justify-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-2.5 h-2.5 ${
-                          i + 1 <= movie.rating! ? "fill-yellow-400 text-yellow-400" : "text-white/20"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Title Info - Tiny text to fit the narrow columns */}
-              <div className="mt-2 flex flex-col px-0.5">
-                <h3 className="truncate text-[10px] font-medium text-foreground/70 group-hover:text-foreground">
-                  {movie.title}
-                </h3>
-                <div className="flex justify-between text-[9px] text-muted-foreground/50">
-                  <span>{movie.year}</span>
-                  <span>2026</span>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
+        <FilmReel movies={recentMovies} />
       </div>
     </section>
   );
