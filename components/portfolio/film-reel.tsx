@@ -31,9 +31,9 @@ export interface ReelMovie {
 const FRAME_WIDTH_CLASS = "w-32 sm:w-40 md:w-44";
 const FRAME_PADDING_CLASS = "px-[calc(50%-4rem)] sm:px-[calc(50%-5rem)] md:px-[calc(50%-5.5rem)]";
 
-// Deeper kraft-paper tone for the strip band itself — derived from the site's
-// own warm tokens (a wash of --warm-foreground over --warm), not a new color.
-const FILM_STRIP_BG = "color-mix(in oklch, var(--warm-foreground) 14%, var(--warm))";
+// Dark brown film stock for the strip band — the site's existing dark warm
+// token, used directly rather than a lighter wash.
+const FILM_STRIP_BG = "var(--warm-foreground)";
 const SPROCKET_HOLE_COLOR = "var(--background)";
 
 function SprocketStrip() {
@@ -156,7 +156,7 @@ export function FilmReel({ movies }: { movies: ReelMovie[] }) {
 
   return (
     <div
-      className="overflow-hidden rounded-3xl bg-[var(--warm)] shadow-xl"
+      className="overflow-hidden rounded-3xl bg-[#F5EFE1] shadow-xl"
       role="region"
       aria-roledescription="carousel"
       aria-label="Film diary reel"
@@ -169,7 +169,7 @@ export function FilmReel({ movies }: { movies: ReelMovie[] }) {
         {/* The gate — a fixed lit window in the horizontal center */}
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-lg ring-2 ring-[var(--accent-foreground)]/40 ${FRAME_WIDTH_CLASS}`}
+          className={`pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-lg ring-2 ring-[var(--accent)]/60 ${FRAME_WIDTH_CLASS}`}
           style={{ aspectRatio: "2 / 3" }}
         />
 
@@ -200,8 +200,8 @@ export function FilmReel({ movies }: { movies: ReelMovie[] }) {
                   tabIndex={-1}
                   className={`relative block overflow-hidden rounded-md transition-all duration-500 ease-out ${
                     isActive
-                      ? "scale-100 border-2 border-[var(--accent-foreground)]/80 opacity-100"
-                      : "scale-90 border border-[var(--warm-foreground)]/15 opacity-60 sepia-[.55] saturate-[.85]"
+                      ? "scale-100 border-2 border-[var(--accent)] opacity-100"
+                      : "scale-90 border border-[var(--warm)]/15 opacity-60 sepia-[.55] saturate-[.85]"
                   }`}
                   style={{ aspectRatio: "2 / 3" }}
                 >
@@ -241,7 +241,7 @@ export function FilmReel({ movies }: { movies: ReelMovie[] }) {
       <SprocketStrip />
 
       {/* Position dots */}
-      <div className="flex flex-wrap items-center justify-center gap-1.5 bg-[var(--warm)] px-4 pb-4 pt-3">
+      <div className="flex flex-wrap items-center justify-center gap-1.5 bg-[#F5EFE1] px-4 pb-4 pt-3">
         {movies.map((movie, index) => (
           <button
             key={movie.id}
@@ -259,7 +259,7 @@ export function FilmReel({ movies }: { movies: ReelMovie[] }) {
       </div>
 
       {/* Active film detail panel */}
-      <div className="border-t border-[var(--warm-foreground)]/10 bg-[var(--warm)] px-6 py-8 sm:px-10">
+      <div className="border-t border-[#E7DFCC] bg-[#F5EFE1] px-6 py-8 sm:px-10">
         <div aria-live="polite" className="sr-only">
           {active.title}
           {active.year ? `, ${active.year}` : ""}
