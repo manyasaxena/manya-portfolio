@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Star, ArrowUpRight } from "lucide-react";
 import Parser from "rss-parser";
+import sanitizeHtml from "sanitize-html";
 
 interface Movie {
   id: string;
@@ -8,6 +9,8 @@ interface Movie {
   year: string;
   poster: string;
   rating?: number;
+  review?: string;
+  link: string;
 }
 
 const FEED_URL = "https://letterboxd.com/ms03flm/rss/";
@@ -17,6 +20,33 @@ const FALLBACK_POSTER = "https://picsum.photos/seed/picsum/400/600";
 function extractPosterFromDescription(description: string): string | null {
   const match = description.match(/<img[^>]+src=["']([^"']+)["']/i);
   return match?.[1] ?? null;
+}
+
+// Letterboxd's <description> is the poster <img>, sometimes wrapped in a <p>,
+// followed by either the review body or a "Watched on <date>." boilerplate line
+// when there's no review. Strip the poster and the boilerplate, sanitize what's
+// left, and treat an empty result as "no review" rather than an empty bubble.
+function extractReview(description: string): string | undefined {
+  if (!description) return undefined;
+
+  const withoutPoster = description
+    .replace(/<p>\s*<img[^>]*>\s*<\/p>/gi, "")
+    .replace(/<img[^>]*>/gi, "")
+    .replace(/<p>\s*Watched on [^<]*<\/p>/gi, "")
+    .trim();
+
+  if (!withoutPoster) return undefined;
+
+  const sanitized = sanitizeHtml(withoutPoster, {
+    allowedTags: ["p", "br", "em", "i", "strong", "b", "blockquote", "span", "a"],
+    allowedAttributes: { a: ["href"] },
+    transformTags: {
+      a: sanitizeHtml.simpleTransform("a", { rel: "noopener noreferrer", target: "_blank" }),
+    },
+  }).trim();
+
+  const textOnly = sanitized.replace(/<[^>]+>/g, "").trim();
+  return textOnly.length > 0 ? sanitized : undefined;
 }
 
 function extractTitle(rawTitle?: string): string {
@@ -51,15 +81,17 @@ async function getRecentMovies(): Promise<Movie[]> {
     const parser = new Parser();
     const feed = await parser.parseString(xml);
 
-    // CHANGED: slice(0, 7) to get exactly seven movies
-    return (feed.items ?? []).slice(0, 7).map((item, index) => {
+    return (feed.items ?? []).slice(0, 20).map((item, index) => {
       const raw = item as any;
+      const description = item.content || item.summary || "";
       return {
         id: item.guid || item.link || String(index),
         title: extractTitle(item.title),
         year: extractYear(item.pubDate),
-        poster: extractPosterFromDescription(item.content || item.summary || "") || FALLBACK_POSTER,
+        poster: extractPosterFromDescription(description) || FALLBACK_POSTER,
         rating: extractRating(raw, item.title),
+        review: extractReview(description),
+        link: item.link || LETTERBOXD_PROFILE_URL,
       };
     });
   } catch {
