@@ -134,6 +134,19 @@ export async function MoviesSection() {
           <p className="max-w-4xl text-sm leading-relaxed text-muted-foreground/80 md:text-base">
             Whether it’s a blockbuster, speculative sci-fi, animation, or an A24 film, I’m drawn to movies with compelling characters that either make me feel something deeply or let my imagination run free...
           </p>
+
+          <p className="max-w-4xl text-sm leading-relaxed text-muted-foreground/70 md:text-base">
+            <a
+              href={LETTERBOXD_PROFILE_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-[var(--accent-foreground)] underline decoration-[var(--accent-foreground)]/30 underline-offset-2 transition-colors hover:decoration-[var(--accent-foreground)]/70"
+            >
+              Follow me on Letterboxd
+            </a>
+            <span className="mx-2 text-muted-foreground/40">·</span>
+            Quick takes, real reactions, zero pretense.
+          </p>
         </div>
 
         <FilmReel movies={recentMovies} />
