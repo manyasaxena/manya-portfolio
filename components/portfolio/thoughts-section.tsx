@@ -1,5 +1,18 @@
 import { ArrowDown, ArrowUpRight, Calendar } from "lucide-react";
 import Parser from "rss-parser";
+import { Playfair_Display } from "next/font/google";
+import { SlideUpSection } from "@/components/portfolio/scroll-reveal";
+
+const playfairDisplay = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
+});
+
+// Fixed per-card tilt so each card reads as individually hand-placed rather than
+// mechanically alternating. Indexed by post position (0, 1, 2).
+const CARD_ROTATIONS = ["rotate-[-0.8deg]", "rotate-[0.6deg]", "rotate-[-0.5deg]"];
 
 interface BlogPost {
   id: string;
@@ -76,29 +89,52 @@ async function getPosts(): Promise<BlogPost[]> {
   }
 }
 
+// A small strip of tape straddling the card's top edge — a flat, semi-transparent
+// lavender rectangle rather than an image, so it stays exactly 72x22px and never
+// reads as a big floating graphic. `side` alternates which corner it's pinned from.
+function CardTape({ side }: { side: "left" | "right" }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`absolute z-10 h-[22px] w-[72px] rounded-[2px] bg-[#9A8CD6] opacity-40 ${
+        side === "left" ? "left-6 -rotate-6" : "right-6 rotate-6"
+      }`}
+      style={{ top: "-10px" }}
+    />
+  );
+}
+
 export async function ThoughtsSection() {
   const posts = await getPosts();
 
   return (
-    <section id="thoughts" className="flex min-h-screen w-full flex-col justify-center py-24 opacity-90 transition-opacity duration-500 hover:opacity-100">
-      <div className="mx-auto w-full max-w-5xl px-6">
-        
-        {/* Section header & Intro */}
+    <section
+      id="thoughts"
+      className={`${playfairDisplay.variable} flex min-h-screen w-full flex-col justify-center bg-white py-16`}
+    >
+      {/* Same wrapper as Projects (mx-auto max-w-6xl px-6) so this section's left/right */}
+      {/* margins line up exactly with the rest of the site. */}
+      <div className="mx-auto w-full max-w-6xl px-6">
+
+        {/* Section header & Intro — left-aligned, full width of the wide container. */}
+        {/* Sizing matches the Art section header (text-4xl/5xl title, mb-12 gap-6). */}
         <div className="mb-12 flex flex-col gap-6">
           {/* Title and Line */}
           <div className="flex items-center gap-5">
-            <h2 className="whitespace-nowrap font-serif text-4xl md:text-5xl text-foreground/85">Latest Thoughts</h2>
-            
-            <a 
-              href="https://medium.com/@manyasaxena_32526" 
-              target="_blank" 
+            <h2 className="whitespace-nowrap font-[family-name:var(--font-playfair)] text-4xl italic text-foreground/85 md:text-5xl">
+              Latest Thoughts
+            </h2>
+
+            <a
+              href="https://medium.com/@manyasaxena_32526"
+              target="_blank"
               rel="noreferrer"
               className="group flex flex-1 items-center gap-4"
               title="Read more on Medium"
             >
               {/* UNIFORM Purple Line */}
               <div className="h-px flex-1 bg-purple-200 transition-all duration-500 group-hover:bg-purple-400 group-hover:shadow-[0_0_12px_rgba(168,85,247,0.4)]" />
-              
+
               {/* The Blog Label */}
               <span className="flex items-center gap-1 text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground/60 transition-colors duration-300 group-hover:text-purple-600">
                 Blog
@@ -107,64 +143,78 @@ export async function ThoughtsSection() {
             </a>
           </div>
 
-          {/* Personalized Subheader - Max width removed so it stretches cleanly */}
-          <p className="w-full text-sm leading-relaxed text-muted-foreground/80 md:text-base">
-            Writing has always been how I make sense of the world—how I process, reflect, and connect ideas. I share these thoughts on Medium, where I explore psychology, design, technology, and everything in between :)
+          {/* Personalized Subheader */}
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/80 md:text-base">
+            I write to make sense of things — psychology, design, tech, and whatever won&rsquo;t leave me alone.
           </p>
         </div>
 
-        {/* Blog posts styled like aged index cards */}
-        <div className="space-y-3">
-          {posts.map((post, index) => (
-            <article
-              key={post.id}
-              className="group relative flex flex-col gap-4 rounded-2xl border border-white/50 bg-white/40 p-6 shadow-xl backdrop-blur-md transition-all duration-300 hover:bg-white/50 md:flex-row md:items-start md:gap-6"
-            >
-              {/* Decorative corner fold */}
-              <div className="absolute right-0 top-0 h-6 w-6 bg-gradient-to-bl from-accent/10 to-transparent" />
-              
-              {/* Catalog index number - Solid Purple, no wireframe */}
-              <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-md bg-purple-100 font-mono text-sm font-medium text-purple-700 md:flex">
-                {String(index + 1).padStart(2, "0")}
-              </div>
+        {/* Blog posts — a centered, hand-placed card column, narrower than the wide */}
+        {/* section container the left-aligned header above sits in. */}
+        <div className="mx-auto w-full max-w-[660px] space-y-6">
+          {posts.map((post, index) => {
+            const tapeSide = index % 2 === 0 ? "left" : "right";
+            const rotation = CARD_ROTATIONS[index] ?? "";
 
-              {/* Content */}
-              <div className="min-w-0 flex-1">
-                <div className="mb-2 flex items-start justify-between gap-4">
-                  <h3 className="font-serif text-lg leading-snug text-warm-foreground transition-colors group-hover:text-warm-foreground/90">
+            return (
+              <SlideUpSection key={post.id} delay={index * 150} duration={800} distance={24}>
+                <article
+                  className={`
+                    group relative rounded-xl border-[0.5px] border-[#E7DFCC] bg-[#F5EFE1]
+                    px-6 py-4 shadow-[0_6px_18px_-6px_rgba(120,100,72,0.20)]
+                    transition-all duration-300 ease-out
+                    hover:-translate-y-1 hover:rotate-0 hover:shadow-[0_10px_24px_-8px_rgba(120,100,72,0.26)]
+                    ${rotation}
+                  `}
+                >
+                  {/* Small washi-tape strip, straddling the top edge */}
+                  <CardTape side={tapeSide} />
+
+                  {/* Top row: index chip + date */}
+                  <div className="mb-1.5 flex items-center justify-between gap-4">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#EEEDFE] font-mono text-xs font-medium text-[#534AB7]">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div className="flex items-center gap-1.5 text-xs text-[#6E6656]">
+                      <Calendar className="h-3 w-3" />
+                      <span>{post.date}</span>
+                    </div>
+                  </div>
+
+                  {/* Title — clamped to one line to keep card height predictable */}
+                  <h3 className="truncate font-[family-name:var(--font-playfair)] text-xl font-medium italic leading-snug text-[#2C2822]">
                     <a href={post.link} target="_blank" rel="noreferrer">
                       {post.title}
                     </a>
                   </h3>
-                  <a href={post.link} target="_blank" rel="noreferrer">
-                    <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-warm-foreground/50 transition-colors group-hover:text-purple-500" />
-                  </a>
-                </div>
-                <p className="line-clamp-2 text-sm leading-relaxed text-warm-foreground/80">
-                  {post.excerpt}
-                </p>
-              </div>
 
-              {/* Meta - styled like library stamps */}
-              <div className="flex shrink-0 items-center gap-3 text-xs text-warm-foreground/70 md:flex-col md:items-end md:gap-2">
-                <div className="flex items-center gap-1.5">
-                  <Calendar className="h-3 w-3" />
-                  <span>{post.date}</span>
-                </div>
-                
-                {/* Purple Tags */}
-                <span className="rounded-md border border-purple-200/60 bg-purple-50/50 px-2.5 py-1 text-purple-700/80 font-medium transition-colors group-hover:bg-purple-100/60 group-hover:border-purple-300/60 group-hover:text-purple-800">
-                  Medium
-                </span>
-              </div>
-            </article>
-          ))}
+                  {/* Excerpt */}
+                  <p className="mt-1.5 line-clamp-2 text-sm leading-[1.55] text-[#6E6656]">
+                    {post.excerpt}
+                  </p>
+
+                  {/* Medium tag */}
+                  <div className="mt-2 flex justify-end">
+                    <a
+                      href={post.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 rounded-md bg-[#EEEDFE] px-2.5 py-1 text-xs font-medium text-[#534AB7] transition-colors hover:bg-[#e2e0fa]"
+                    >
+                      Medium
+                      <ArrowUpRight className="h-3 w-3" />
+                    </a>
+                  </div>
+                </article>
+              </SlideUpSection>
+            );
+          })}
         </div>
 
-        {/* Navigation to Art Section */}
-        <div className="mt-12 flex justify-end">
-          <a 
-            href="#Art" 
+        {/* Clean space where the typewriter footer will drop in later */}
+        <div className="mt-10 flex justify-end">
+          <a
+            href="#Art"
             className="group flex items-center gap-3 text-sm font-medium text-neutral-500 transition-colors hover:text-neutral-900"
           >
             <span className="tracking-wide">My artwork</span>
@@ -173,7 +223,6 @@ export async function ThoughtsSection() {
             </div>
           </a>
         </div>
-
       </div>
     </section>
   );

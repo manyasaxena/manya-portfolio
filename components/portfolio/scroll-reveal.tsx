@@ -75,11 +75,13 @@ export function SlideUpSection({
   children,
   delay = 0,
   duration = 1200,
+  distance = 96,
   className = "",
 }: {
   children: React.ReactNode;
   delay?: number;
   duration?: number;
+  distance?: number;
   className?: string;
 }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -105,13 +107,18 @@ export function SlideUpSection({
   // The observed wrapper stays in its natural position; only the inner child is
   // transformed. (Observing a translated element can push it below the viewport
   // so the observer never fires — this keeps the trigger reliable at page edges.)
+  // Distance is applied via inline style (rather than a translate-y-* class) so any
+  // pixel value can be passed in without relying on Tailwind's fixed spacing scale.
   return (
     <div ref={elementRef} className={className}>
       <div
-        style={{ transitionDelay: `${delay}ms`, transitionDuration: `${duration}ms` }}
-        className={`transition-all ease-[cubic-bezier(0.34,1.32,0.46,1)] ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-24"
-        }`}
+        style={{
+          transitionDelay: `${delay}ms`,
+          transitionDuration: `${duration}ms`,
+          transform: isVisible ? "translateY(0)" : `translateY(${distance}px)`,
+          opacity: isVisible ? 1 : 0,
+        }}
+        className="transition-all ease-[cubic-bezier(0.34,1.32,0.46,1)]"
       >
         {children}
       </div>
