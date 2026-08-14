@@ -147,6 +147,17 @@ export async function ThoughtsSection() {
           <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/80 md:text-base">
             I write to make sense of things — psychology, design, tech, and whatever won&rsquo;t leave me alone.
           </p>
+
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/70 md:text-base">
+            <a
+              href="https://substack.com/@manyasaxena?r=5i8g7g&utm_campaign=profile&utm_medium=profile-page"
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-[var(--accent-foreground)] underline decoration-[var(--accent-foreground)]/30 underline-offset-2 transition-colors hover:decoration-[var(--accent-foreground)]/70"
+            >
+              Follow Me on Substack!
+            </a>
+          </p>
         </div>
 
         {/* Blog posts — a centered, hand-placed card column, narrower than the wide */}

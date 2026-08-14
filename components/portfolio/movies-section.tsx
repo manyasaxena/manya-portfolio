@@ -144,8 +144,6 @@ export async function MoviesSection() {
             >
               Follow me on Letterboxd
             </a>
-            <span className="mx-2 text-muted-foreground/40">·</span>
-            Quick takes, real reactions, zero pretense.
           </p>
         </div>
 

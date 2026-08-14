@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, ArrowDown } from "lucide-react";
+import { ArrowUpRight, ArrowDown, Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -12,7 +12,7 @@ interface Project {
   title: string;
   subtitle: string;
   description: string;
-  image: string;
+  image?: string;
   tags: string[];
   spineColor: string;
   link: string;
@@ -46,20 +46,19 @@ const projects: Project[] = [
     title: "Frame",
     subtitle: "An ethical take on social media",
     description: "A redesigned social platform optimizing for choice driven algorithmic feeds, real world social connection, and mindful media consumption.",
-    image: "/projects/frame-cover.jpg", // Assuming this one is actually a .jpg based on your folder!
+    image: "/projects/frame/frame-cover.jpg",
     tags: ["UX Research", "Mobile App", "Ethics"],
     spineColor: "book-spine-1",
     link: "/projects/frame",
   },
   {
     id: "3",
-    title: "BSGD Club Branding",
-    subtitle: "UCSC club identity",
-    description: "Developing a branding identity for UCSC's Baby Slug Game Development Club.",
-    image: "/projects/bsgd/bsgd-cover.png", // Changed from .jpg to .png
-    tags: ["Branding", "Visual Design", "Identity"],
+    title: "Hackathons",
+    subtitle: "Fast builds across product, AI & consulting hackathons",
+    description: "A running collection of hackathon projects — scrappy, high-speed builds spanning product consulting and AI, from idea to pitch in a weekend.",
+    tags: ["Hackathons", "AI", "Product Consulting"],
     spineColor: "book-spine-3",
-    link: "/projects/bsgd",
+    link: "/projects/hackathons",
   },
 ];
 
@@ -183,17 +182,23 @@ export function ProjectsSection() {
                         ${isHovered ? "opacity-100" : "pointer-events-none opacity-0"}
                       `}
                     >
-                      {/* Project image */}
+                      {/* Project image — falls back to a branded gradient card until a real cover exists */}
                       <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden">
                         <div className="absolute inset-0 z-10 bg-gradient-to-t from-white/95 via-transparent to-transparent" />
-                        <Image
-                          src={project.image}
-                          alt={project.title}
-                          fill
-                          className="object-cover"
-                          sizes="320px"
-                          loading={index === 0 ? "eager" : "lazy"}
-                        />
+                        {project.image ? (
+                          <Image
+                            src={project.image}
+                            alt={project.title}
+                            fill
+                            className="object-cover"
+                            sizes="320px"
+                            loading={index === 0 ? "eager" : "lazy"}
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-emerald-700 via-green-800 to-teal-800">
+                            <Trophy className="h-10 w-10 text-white/90" />
+                          </div>
+                        )}
                       </div>
 
                       {/* Content */}
