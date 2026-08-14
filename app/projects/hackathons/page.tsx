@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ArrowUpRight, ChevronRight, Image as ImageIcon, Presentation } from "lucide-react";
-import type { ComponentType, ReactNode } from "react";
+import { ArrowLeft, ArrowUpRight, ChevronRight, Trophy } from "lucide-react";
+import type { ReactNode } from "react";
 import { BubbleScrollSection, FadeInSection } from "@/components/portfolio/scroll-reveal";
 
 /* ---------- Local building blocks ---------- */
@@ -23,17 +23,19 @@ function Paragraph({ children }: { children: ReactNode }) {
   return <p className="text-base leading-relaxed text-neutral-700 sm:text-lg">{children}</p>;
 }
 
-// The title bubble — title, hackathon name, date, location.
+// The title bubble — title, hackathon name, date, location, and any awards won.
 function ProjectHeader({
   title,
   subtitle,
   date,
   location,
+  awards,
 }: {
   title: string;
   subtitle: string;
   date: string;
   location: string;
+  awards?: string[];
 }) {
   return (
     <Bubble>
@@ -43,6 +45,19 @@ function ProjectHeader({
         <p>Date: {date}</p>
         <p>Location: {location}</p>
       </div>
+      {awards && awards.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {awards.map((award) => (
+            <span
+              key={award}
+              className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800"
+            >
+              <Trophy className="h-3.5 w-3.5" />
+              {award}
+            </span>
+          ))}
+        </div>
+      )}
     </Bubble>
   );
 }
@@ -75,28 +90,38 @@ function CanvaEmbed({ src, title }: { src: string; title: string }) {
   );
 }
 
-// A dashed placeholder rectangle — used until a project has real media to show.
-function MediaPlaceholder({ label, icon: Icon }: { label: string; icon: ComponentType<{ className?: string }> }) {
+// A responsive Google Slides embed — 16:9 per Google's own "Publish to web" embed snippet.
+function GoogleSlidesEmbed({ src, title }: { src: string; title: string }) {
   return (
-    <div className="overflow-hidden rounded-2xl border-2 border-dashed border-neutral-300 bg-neutral-50/80">
-      <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 p-6 text-center">
-        <Icon className="h-7 w-7 text-neutral-300" />
-        <span className="max-w-[80%] text-xs font-semibold uppercase tracking-wide text-neutral-400">{label}</span>
-      </div>
+    <div
+      className="relative w-full overflow-hidden rounded-2xl border border-white/70 bg-white/70 shadow-md backdrop-blur-md"
+      style={{ paddingTop: "56.25%" }}
+    >
+      <iframe
+        loading="lazy"
+        src={src}
+        title={title}
+        allow="fullscreen"
+        allowFullScreen
+        className="absolute inset-0 h-full w-full border-0"
+      />
     </div>
   );
 }
 
-// [PROJECT] — the two-column layout every hackathon project follows: title/media on the
-// left (sticky on desktop), flowing prose on the right. The two columns are vertically
-// centered against each other, so a short write-up never leaves a gap under itself.
+// [PROJECT] — the layout every hackathon project follows: title/media on the left
+// (sticky on desktop), flowing prose on the right, vertically centered against each
+// other. The slideshow, if any, runs full-width below that row so it reads at a much
+// larger size than it could inside the narrow media column.
 function ProjectSection({
   num,
   title,
   subtitle,
   date,
   location,
+  awards,
   media,
+  slideshow,
   children,
 }: {
   num: string;
@@ -104,7 +129,9 @@ function ProjectSection({
   subtitle: string;
   date: string;
   location: string;
+  awards?: string[];
   media: ReactNode;
+  slideshow?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -117,7 +144,7 @@ function ProjectSection({
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-center lg:gap-14">
         <div className="space-y-6 lg:sticky lg:top-12 lg:col-span-4">
-          <ProjectHeader title={title} subtitle={subtitle} date={date} location={location} />
+          <ProjectHeader title={title} subtitle={subtitle} date={date} location={location} awards={awards} />
           {media}
         </div>
 
@@ -127,6 +154,17 @@ function ProjectSection({
           </Bubble>
         </div>
       </div>
+
+      {slideshow && (
+        <FadeInSection>
+          <div className="space-y-3">
+            <span className="block text-xs font-bold uppercase tracking-widest text-neutral-400">
+              Slideshow presentation
+            </span>
+            {slideshow}
+          </div>
+        </FadeInSection>
+      )}
     </div>
   );
 }
@@ -173,22 +211,20 @@ export default function HackathonsProjectPage() {
             date="06/27/2026"
             location="SF"
             media={
-              <>
-                <FadeInSection>
-                  <ProjectImage
-                    src="/projects/hackathons/tavusHackImage.jpeg"
-                    alt="The CareerQuest team at the PALmaker × Lovable Hackathon"
-                    width={800}
-                    height={1073}
-                  />
-                </FadeInSection>
-                <FadeInSection className="[transition-delay:150ms]">
-                  <CanvaEmbed
-                    src="https://www.canva.com/design/DAHNzkNWV20/N1oeeeXQi1Bcp6VMLc9OeA/view?embed"
-                    title="CareerQuest slide deck"
-                  />
-                </FadeInSection>
-              </>
+              <FadeInSection>
+                <ProjectImage
+                  src="/projects/hackathons/tavusHackImage.jpeg"
+                  alt="The CareerQuest team at the PALmaker × Lovable Hackathon"
+                  width={800}
+                  height={1073}
+                />
+              </FadeInSection>
+            }
+            slideshow={
+              <CanvaEmbed
+                src="https://www.canva.com/design/DAHNzkNWV20/N1oeeeXQi1Bcp6VMLc9OeA/view?embed"
+                title="CareerQuest slide deck"
+              />
             }
           >
             <Paragraph>Childhood has always been about exploration.</Paragraph>
@@ -224,27 +260,48 @@ export default function HackathonsProjectPage() {
             </div>
           </ProjectSection>
 
-          {/* TODO: fill in Waywise's real hackathon name, date, location, media, and write-up. */}
           <ProjectSection
             num="02"
             title="Waywise"
-            subtitle="Hackathon Name"
-            date="Date"
-            location="Location"
+            subtitle="Product Consulting Hackathon at Method"
+            date="January 2026"
+            location="Online"
+            awards={["2nd Place", "Best Storytelling"]}
             media={
-              <>
-                <FadeInSection>
-                  <MediaPlaceholder label="Project images" icon={ImageIcon} />
-                </FadeInSection>
-                <FadeInSection className="[transition-delay:150ms]">
-                  <MediaPlaceholder label="Slideshow presentation" icon={Presentation} />
-                </FadeInSection>
-              </>
+              <FadeInSection>
+                <ProjectImage
+                  src="/projects/hackathons/WinHackathon.jpeg"
+                  alt="Waywise's 2nd Place and Best Storytelling award at the Product Consulting Hackathon hosted by Method"
+                  width={1280}
+                  height={805}
+                />
+              </FadeInSection>
+            }
+            slideshow={
+              <GoogleSlidesEmbed
+                src="https://docs.google.com/presentation/d/1VGat7KLaW4MPJ9XEfqIwFbh3kt6fejstDTWPHSQOlnc/embed?start=false&loop=false&delayms=3000"
+                title="Waywise slide deck"
+              />
             }
           >
+            <Paragraph>Campus transit is the backbone of daily student life.</Paragraph>
+
             <Paragraph>
-              Case study coming soon — check back for the full write-up on what Waywise does, the problem it solves,
-              and my role in building it.
+              However, university fleets still managed with fragmented data, reactive repairs, and guesswork. This
+              leaves students stranded when buses unexpectedly break down.
+            </Paragraph>
+
+            <Paragraph>
+              WayWise transforms campus mobility by centralizing fleet operations into an intelligent, real-time
+              dashboard. Instead of scrambling after a breakdown occurs, transit operators gain live visibility into
+              vehicle health metrics, predictive maintenance schedules, and route efficiency. That proactive
+              visibility turns unpredictable transit delays into dependable, sustainable campus infrastructure.
+            </Paragraph>
+
+            <Paragraph>
+              We built intuitive predictive tracking and sustainability insights directly into the platform:
+              empowering universities to optimize routes, cut emissions, and keep fleets running smoothly before
+              problems ever arise.
             </Paragraph>
           </ProjectSection>
 

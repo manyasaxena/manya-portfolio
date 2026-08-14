@@ -55,7 +55,7 @@ const projects: Project[] = [
     id: "3",
     title: "Hackathons",
     subtitle: "Fast builds across product, AI & consulting hackathons",
-    description: "A running collection of hackathon projects — scrappy, high-speed builds spanning product consulting and AI, from idea to pitch in a weekend.",
+    description: "A running collection of hackathon projects: builds spanning product consulting and AI, from idea to pitch in a weekend.",
     tags: ["Hackathons", "AI", "Product Consulting"],
     spineColor: "book-spine-3",
     link: "/projects/hackathons",
@@ -195,8 +195,8 @@ export function ProjectsSection() {
                             loading={index === 0 ? "eager" : "lazy"}
                           />
                         ) : (
-                          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-emerald-700 via-green-800 to-teal-800">
-                            <Trophy className="h-10 w-10 text-white/90" />
+                          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-emerald-100 via-green-200 to-teal-200">
+                            <Trophy className="h-10 w-10 text-emerald-700/70" />
                           </div>
                         )}
                       </div>
