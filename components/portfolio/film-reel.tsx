@@ -31,9 +31,10 @@ export interface ReelMovie {
 const FRAME_WIDTH_CLASS = "w-28 sm:w-36 md:w-40";
 const FRAME_PADDING_CLASS = "px-[calc(50%-3.5rem)] sm:px-[calc(50%-4.5rem)] md:px-[calc(50%-5rem)]";
 
-// Dark brown film stock for the strip band — the site's existing dark warm
-// token, used directly rather than a lighter wash.
-const FILM_STRIP_BG = "var(--warm-foreground)";
+// Lighter warm-brown film stock for the strip band — its own tone (not the
+// shared --warm-foreground token, which stays dark for text/border legibility
+// elsewhere in the component).
+const FILM_STRIP_BG = "oklch(0.4 0.06 40)";
 const SPROCKET_HOLE_COLOR = "var(--background)";
 
 function SprocketStrip() {

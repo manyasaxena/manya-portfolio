@@ -101,6 +101,41 @@ function SectionHeader({ eyebrow, title }: { eyebrow: string; title: string }) {
   );
 }
 
+// [BODY TEXT] — plain editorial paragraph sitting directly on the page (no card),
+// same size/color as the text inside Bubbles and the same width.
+function BodyText({ children }: { children: ReactNode }) {
+  return <p className="mx-auto max-w-2xl text-lg sm:text-xl leading-relaxed text-neutral-700">{children}</p>;
+}
+
+// [QUOTE BUBBLE] — a user quote as a soft chat bubble: frosted card with one
+// tucked corner (the "tail"). Body font in dark purple, framed by oversized
+// serif quote marks for emphasis.
+function QuoteBubble({
+  children,
+  delayClass,
+  className = "",
+}: {
+  children: ReactNode;
+  delayClass?: string;
+  className?: string;
+}) {
+  return (
+    <div className={className}>
+      <BubbleScrollSection delayClass={delayClass}>
+        <figure className="rounded-3xl rounded-bl-md border border-white/80 bg-white/80 px-8 pb-6 pt-5 shadow-md backdrop-blur-2xl sm:px-9">
+          <span aria-hidden="true" className="block h-10 font-serif text-7xl leading-none text-purple-900/70">
+            &ldquo;
+          </span>
+          <blockquote className="text-lg sm:text-xl leading-relaxed text-purple-900">{children}</blockquote>
+          <span aria-hidden="true" className="block h-10 text-right font-serif text-7xl leading-none text-purple-900/70">
+            &rdquo;
+          </span>
+        </figure>
+      </BubbleScrollSection>
+    </div>
+  );
+}
+
 // [BUBBLE] — one idea, rounded soft-shadow card, lots of air.
 function Bubble({
   children,
@@ -223,12 +258,10 @@ function SplitTitle({ children }: { children: ReactNode }) {
 }
 
 // Compact bubble used for subtitle/body copy inside a [SPLIT] text column.
-function SplitBubble({ children }: { children: ReactNode }) {
-  return (
-    <div className="rounded-2xl border border-white/80 bg-white/70 p-5 shadow-sm backdrop-blur-md">
-      <p className="text-base sm:text-lg leading-relaxed text-neutral-700">{children}</p>
-    </div>
-  );
+// Plain editorial paragraph beside a phone demo — same typography as BodyText,
+// but fills the Split column instead of centering.
+function SplitText({ children }: { children: ReactNode }) {
+  return <p className="text-lg sm:text-xl leading-relaxed text-neutral-700">{children}</p>;
 }
 
 // Colored-bar frosted card used inside every [CARD-ROW].
@@ -457,6 +490,29 @@ export default function GlobalLogicProjectPage() {
           </p>
         </header>
 
+        {/* Frosted Metadata Dashboard Block */}
+        <div className="mb-10">
+          <BubbleScrollSection>
+            <section className="bg-white/60 border border-white/80 p-8 rounded-3xl shadow-xs backdrop-blur-2xl grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="space-y-1.5">
+                <span className="text-xs font-bold uppercase tracking-widest text-neutral-400 block">Timeline</span>
+                <span className="text-neutral-900 font-serif text-2xl font-medium">5 Weeks</span>
+                <span className="text-sm text-neutral-500 block">Summer 2026</span>
+              </div>
+              <div className="space-y-1.5 md:border-l md:border-neutral-200/40 md:pl-8">
+                <span className="text-xs font-bold uppercase tracking-widest text-neutral-400 block">Role</span>
+                <span className="text-neutral-900 font-sans text-xl font-semibold leading-tight block">AI Product Design Intern</span>
+                <span className="text-sm text-neutral-500 block">End-to-End UX/UI & Prototyping</span>
+              </div>
+              <div className="space-y-1.5 md:border-l md:border-neutral-200/40 md:pl-8">
+                <span className="text-xs font-bold uppercase tracking-widest text-neutral-400 block">Company</span>
+                <span className="text-orange-900 font-sans text-xl font-bold leading-tight block">GlobalLogic</span>
+                <span className="text-sm text-neutral-500 block">a Hitachi company</span>
+              </div>
+            </section>
+          </BubbleScrollSection>
+        </div>
+
         {/* Hero slide */}
         <div className="mb-16">
           <FadeInSection>
@@ -475,30 +531,17 @@ export default function GlobalLogicProjectPage() {
         {/* Continuous Scroll Journey */}
         <div className="space-y-32">
 
-          {/* Frosted Metadata Dashboard Block */}
-          <BubbleScrollSection>
-            <section className="bg-white/60 border border-white/80 p-8 rounded-3xl shadow-xs backdrop-blur-2xl grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="space-y-1.5">
-                <span className="text-xs font-bold uppercase tracking-widest text-neutral-400 block">Timeline</span>
-                <span className="text-neutral-900 font-serif text-2xl font-medium">5 Weeks</span>
-                <span className="text-sm text-neutral-500 block">Summer 2026</span>
-              </div>
-              <div className="space-y-1.5 md:border-l md:border-neutral-200/40 md:pl-8">
-                <span className="text-xs font-bold uppercase tracking-widest text-neutral-400 block">Role</span>
-                <span className="text-neutral-900 font-sans text-xl font-semibold leading-tight block">AI Product Intern</span>
-                <span className="text-sm text-neutral-500 block">Design, Prototyping & Agentic Backend</span>
-              </div>
-              <div className="space-y-1.5 md:border-l md:border-neutral-200/40 md:pl-8">
-                <span className="text-xs font-bold uppercase tracking-widest text-neutral-400 block">Company</span>
-                <span className="text-orange-900 font-sans text-xl font-bold leading-tight block">GlobalLogic</span>
-                <span className="text-sm text-neutral-500 block">a Hitachi company</span>
-              </div>
-            </section>
-          </BubbleScrollSection>
-
           {/* ===================== SECTION 1 — THE PROBLEM ===================== */}
           <div id="chapter-01" className="space-y-14">
             <SectionHeader eyebrow="Chapter 01" title="The Problem" />
+
+            <FadeInSection>
+              <BodyText>
+                We have more ways to track our health than ever, yet ask someone how they&rsquo;re actually doing and
+                you&rsquo;ll still get a reflexive &ldquo;good.&rdquo; Instead of helping people feel better, most wellness
+                apps just pile on isolated notifications, streaks, and numbers without real context or human connection.
+              </BodyText>
+            </FadeInSection>
 
             <FadeInSection>
               <SlideImage
@@ -508,14 +551,8 @@ export default function GlobalLogicProjectPage() {
               />
             </FadeInSection>
 
-            <Bubble maxWidthClass="max-w-none">
-              Ask someone how they&rsquo;re doing and you get one word — <em>&ldquo;good&rdquo;</em> — while their phone stacks up
-              notifications from apps that lack personalized context, fragment the user&rsquo;s attention through gamified
-              loops, and keep people isolated from one another.
-            </Bubble>
-
             <PullQuote>
-              We&rsquo;re drowning in metrics and starving for insight — and doing it alone.
+              We&rsquo;re drowning in metrics and starving for insight (and doing it alone).
             </PullQuote>
 
             <div className="grid grid-cols-1 gap-10 sm:grid-cols-3">
@@ -573,11 +610,6 @@ export default function GlobalLogicProjectPage() {
               Humans are social creatures. <strong className="font-bold text-neutral-900">Why are we doing wellness alone?</strong>
             </PullQuote>
 
-            <Bubble delayClass="[animation-delay:100ms]">
-              Spectra&rsquo;s bet: the missing layer isn&rsquo;t more tracking — it&rsquo;s{" "}
-              <strong className="font-semibold text-neutral-900">AI that makes the data personal, and community that makes it stick.</strong>
-            </Bubble>
-
             <BubbleScrollSection delayClass="[animation-delay:150ms]">
               <p className="mx-auto max-w-4xl pl-2 text-left text-lg sm:text-xl text-neutral-500 sm:pl-4">
                 Two questions drove everything:
@@ -604,59 +636,69 @@ export default function GlobalLogicProjectPage() {
           <div id="chapter-02" className="space-y-14">
             <SectionHeader eyebrow="Chapter 02" title="Research & Discovery" />
 
-            <Split
-              media={
-                <SlideImage
-                  src="/projects/GLContent/spectraSlides/persona.png"
-                  alt="Meet Sam persona slide: 37-year-old project manager and mother of two, with her goals and frustrations"
-                />
-              }
-            >
-              <div>
-                <span className="block text-xs font-bold uppercase tracking-widest text-neutral-400 mb-2">Persona</span>
-                <h4 className="font-serif text-3xl font-semibold text-neutral-900 tracking-tight">Meet Sam</h4>
-                <p className="text-sm text-neutral-500 mt-1">37, project manager & mother of two, SF. Hectic, fast-paced.</p>
-              </div>
+            <FadeInSection>
+              <BodyText>
+                First, I looked into who actually uses wellness trackers and what makes them drop off, then distilled those
+                patterns into a persona named <strong className="font-semibold text-neutral-900">Sam</strong>. Designing for
+                someone with her schedule showed me what current apps miss: they treat health like a solitary checklist of
+                numbers instead of a sustainable lifestyle shared with people you care about.
+              </BodyText>
+            </FadeInSection>
 
-              <div className="rounded-2xl border border-white/80 bg-white/70 p-5 shadow-sm backdrop-blur-md">
-                <p className="font-serif text-lg italic leading-relaxed text-neutral-800">
-                  &ldquo;My apps give me plenty of numbers, but they leave me completely out of the loop.&rdquo;
-                </p>
+            <FadeInSection>
+              <SlideImage
+                src="/projects/GLContent/spectraSlides/persona.png"
+                className="mx-auto max-w-3xl"
+                alt="Meet Sam persona slide: 37-year-old project manager and mother of two, with her goals and frustrations"
+              />
+              <div className="mt-8">
+                <BodyText>
+                  Looking at wellness apps through Sam&rsquo;s routine exposed the core tension: busy people don&rsquo;t
+                  lack health data, they lack time to decode it, and without a social anchor, daily tracking quickly turns
+                  into a lonely chore.
+                </BodyText>
               </div>
-
-              <div className="space-y-3">
-                <div>
-                  <span className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Goals</span>
-                  <p className="text-sm leading-relaxed text-neutral-600">
-                    balance fitness, nutrition & connection <strong className="font-semibold text-neutral-900">without burnout</strong>; stay bonded to family and peers.
-                  </p>
-                </div>
-                <div>
-                  <span className="block text-xs font-bold uppercase tracking-widest text-neutral-400">Frustrations</span>
-                  <p className="text-sm leading-relaxed text-neutral-600">fragmented, sterile data; a creeping sense of disconnection.</p>
-                </div>
-              </div>
-            </Split>
-
-            <Bubble>
-              Mapping the landscape against Sam frames wellness as{" "}
-              <strong className="font-semibold text-neutral-900">a chore that must be maintained daily</strong> rather than a
-              sustainable lifestyle. Current systems lack a layer that{" "}
-              <strong className="font-semibold text-neutral-900">sees through data points while also bringing peer connection into the mix.</strong>
-            </Bubble>
+            </FadeInSection>
           </div>
 
           {/* ===================== SECTION 3 — IDEATION ===================== */}
           <div id="chapter-03" className="space-y-14">
             <SectionHeader eyebrow="Chapter 03" title="Ideation: The Five-Axis Model" />
 
-            <Bubble>
-              Spectra transforms wellness from <strong className="font-semibold text-neutral-900">scores to be maxed</strong>{" "}
-              into <strong className="font-semibold text-neutral-900">five spheres to be understood.</strong> On each, the AI says{" "}
-              <strong className="font-semibold text-neutral-900">how you&rsquo;re doing in plain language,</strong> then acts as your{" "}
-              <strong className="font-semibold text-neutral-900">personalized coach</strong> that sees across the entire spectrum
-              of your wellness and provides you with <strong className="font-semibold text-neutral-900">actionable goals.</strong>
-            </Bubble>
+            {/* Why five spheres: observation → user quotes → synthesis */}
+            <FadeInSection>
+              <BodyText>
+                Early on, I knew raw scores and metrics weren&rsquo;t enough. Watching how my friends and family actually used
+                their health apps, I noticed how passive their check-ins had become:
+              </BodyText>
+            </FadeInSection>
+
+            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-3 md:items-start">
+              <QuoteBubble>
+                Looking at my stats each night feels like getting back a test score I already failed.
+              </QuoteBubble>
+              <QuoteBubble delayClass="[animation-delay:120ms]" className="md:mt-10">
+                My watch tells me I got 58% sleep recovery, okay&hellip; now what am I supposed to do at 8 AM?
+              </QuoteBubble>
+              <QuoteBubble delayClass="[animation-delay:240ms]" className="md:mt-4">
+                I stopped opening the app because seeing red numbers just made me feel guilty.
+              </QuoteBubble>
+            </div>
+
+            <FadeInSection>
+              <div className="space-y-6">
+                <BodyText>
+                  I realized that people didn&rsquo;t need more charts, they needed{" "}
+                  <strong className="font-semibold text-neutral-900">context</strong> for what their numbers actually meant,
+                  and a <strong className="font-semibold text-neutral-900">gentle incentive</strong> to act on them with
+                  people they trust.
+                </BodyText>
+                <BodyText>
+                  To move beyond a single readiness number, I looked into the core pillars of everyday wellbeing that people
+                  actually value, and anchored Spectra around five distinct spheres:
+                </BodyText>
+              </div>
+            </FadeInSection>
 
             <FadeInSection>
               <SlideImage
@@ -671,57 +713,62 @@ export default function GlobalLogicProjectPage() {
           <div id="chapter-04" className="space-y-14">
             <SectionHeader eyebrow="Chapter 04" title="Building the Prototype" />
 
-            <BubbleScrollSection>
-              <p className="mx-auto max-w-3xl text-center text-lg sm:text-xl text-neutral-500">
-                I started out with the following wireframes to scope out the application experience.
-              </p>
-            </BubbleScrollSection>
+            <FadeInSection>
+              <div className="space-y-6">
+                <BodyText>
+                  Once I had the five spheres, the real design question became:{" "}
+                  <em>how do you interact with this every day without it feeling like homework?</em>
+                </BodyText>
+                <BodyText>
+                  I narrowed the app down to three things that work together: wellness spheres that quietly update from your
+                  device data instead of throwing charts at you, an AI coach that translates what&rsquo;s changing into plain
+                  English, and <strong className="font-semibold text-neutral-900">Circles</strong>, where a few close friends
+                  can keep each other accountable without any public pressure.
+                </BodyText>
+              </div>
+            </FadeInSection>
 
-            <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2">
-              <FadeInSection>
-                <SlideImage
-                  src="/projects/GLContent/wireframe1Spectra.jpeg"
-                  alt="Spectra wireframe, screen 1"
-                  width={1384}
-                  height={681}
-                />
-              </FadeInSection>
-              <FadeInSection className="[transition-delay:150ms]">
-                <SlideImage
-                  src="/projects/GLContent/wireframe2Spectra.jpeg"
-                  alt="Spectra wireframe, screen 2"
-                  width={1683}
-                  height={758}
-                />
-              </FadeInSection>
-            </div>
-
-            <Bubble>
-              Using agentic AI, I was then able to build out the technical layers that ingest wearable and phone signals, score
-              them into weighted wellness indices through fixed deterministic formulas, and layer a single grounded AI call on
-              top that reasons over those computed numbers.
-            </Bubble>
+            {/* Wireframes — stacked full-width so the sketch labels stay legible.
+                The chapter's space-y-14 leaves room for narrative text between them. */}
+            <FadeInSection>
+              <SlideImage
+                src="/projects/GLContent/wireframe1Spectra.jpeg"
+                alt="Spectra wireframe, screen 1"
+                width={1384}
+                height={681}
+              />
+              <div className="mt-8">
+                <BodyText>
+                  Rather than dropping users straight into a dashboard, I sketched an onboarding flow that lets people
+                  calibrate their own five spheres upfront, so the AI Coach understands what you actually value before
+                  suggesting goals.
+                </BodyText>
+              </div>
+            </FadeInSection>
 
             <FadeInSection>
               <SlideImage
-                src="/projects/GLContent/spectraSlides/archetecture.png"
-                alt="The Architecture slide: a five-step pipeline — Data Ingestion, Deterministic FE, AI Synthesis Layer, Conversational Layer, and Social Layer — governed by the Integrity Principle that the model never invents a number, it only reasons over data already computed"
-                className="mx-auto max-w-2xl"
+                src="/projects/GLContent/wireframe2Spectra.jpeg"
+                alt="Spectra wireframe, screen 2"
+                width={1683}
+                height={758}
               />
+              <div className="mt-8">
+                <BodyText>
+                  From there, I structured the core app around three distinct spaces: a personal home view where an AI coach
+                  translates daily logs into plain language insights, a private space to stay connected with close friends,
+                  and a public Discover hub where people share routines, recipes, and wellness journeys.
+                </BodyText>
+              </div>
             </FadeInSection>
-
-            <Bubble>
-              The real lesson was operational: <strong className="font-semibold text-neutral-900">how to build like a team of
-              several when you&rsquo;re a team of one.</strong> The prototype outgrew static mockups — so I built it.
-            </Bubble>
 
             <div className="min-h-screen flex items-center">
               <Split media={<PhoneVideo src="/projects/GLContent/demo1.mov" className="max-w-[280px] mx-auto" />}>
                 <SplitTitle>Onboarding</SplitTitle>
-                <SplitBubble>
+                <SplitText>
                   The user enters their info and sets their preferences, assigning how much priority each sphere of wellness
                   gets, so the experience is shaped around what matters to them rather than standardized goals.
-                </SplitBubble>
+                </SplitText>
               </Split>
             </div>
 
@@ -731,35 +778,35 @@ export default function GlobalLogicProjectPage() {
                 media={<PhoneVideo src="/projects/GLContent/demo2.mov" className="max-w-[280px] mx-auto" />}
               >
                 <SplitTitle>Diving into Wellness</SplitTitle>
-                <SplitBubble>
+                <SplitText>
                   Spectra translates the day&rsquo;s data into a plain-language status for each wellness sphere, surfaces
                   &ldquo;Today&rsquo;s Lenses&rdquo; insights (an aggregate of the day&rsquo;s data at a glance), and points to
                   the single action worth focusing on in each sphere, so the user always knows where they stand without
                   decoding a wall of metrics.
-                </SplitBubble>
-                <SplitBubble>
+                </SplitText>
+                <SplitText>
                   The user can also dive deeper with a personalized AI agent that sees across their entire spectrum, offering
                   tailored advice and goals.
-                </SplitBubble>
+                </SplitText>
               </Split>
             </div>
 
             <div className="min-h-screen flex items-center">
               <Split media={<PhoneVideo src="/projects/GLContent/demo3.mov" className="max-w-[280px] mx-auto" />}>
                 <SplitTitle>The Social Layer</SplitTitle>
-                <SplitBubble>
+                <SplitText>
                   Wellness stops being solitary. The Home tab becomes a &ldquo;Carousel of Light&rdquo; — a rotating ring of
                   the user&rsquo;s circle. Tap a friend and the whole dashboard flips from your numbers to a no-numbers
                   glimpse of how they&rsquo;re doing, inciting connection without comparison.
-                </SplitBubble>
-                <SplitBubble>
+                </SplitText>
+                <SplitText>
                   Interacting with friends and family about their achievements creates a validation loop, drawing people
                   toward each other as well as their goals.
-                </SplitBubble>
-                <SplitBubble>
+                </SplitText>
+                <SplitText>
                   A social feed surfaces ideas, routines, and recipes from others, plus real-world community events happening
                   nearby.
-                </SplitBubble>
+                </SplitText>
               </Split>
             </div>
 
@@ -769,16 +816,21 @@ export default function GlobalLogicProjectPage() {
           <div id="chapter-05" className="space-y-14">
             <SectionHeader eyebrow="Chapter 05" title="Where It Landed & What's Next" />
 
-            <Bubble>
-              This internship changed how I build. I learned to orchestrate agentic tools — a generated frontend, a
-              scaffolded backend, a persona-driven test harness — into a single working application built around real LLM
-              integration.
-            </Bubble>
-
-            <Bubble>
-              Presenting it to company leadership and mentors confirmed the vision and gave me the feedback to grow it
-              further. With these experiences, I now have the tools to expand this vision further.
-            </Bubble>
+            <FadeInSection>
+              <div className="space-y-6">
+                <BodyText>
+                  Having the freedom to take Spectra from an early hunch all the way to a working prototype completely changed
+                  how I see my role as a designer. Building alongside AI removed the usual wall between &lsquo;here&rsquo;s a
+                  static mockup&rsquo; and &lsquo;here&rsquo;s what it actually feels like to use.&rsquo; It made me feel
+                  capable of bringing much wilder, more human-centered ideas to life end-to-end.
+                </BodyText>
+                <BodyText>
+                  Sharing the final prototype with GlobalLogic mentors and leadership validated the core concept and gave me
+                  sharp feedback on how to push it further. With the interactive foundation in place, here is where I&rsquo;d
+                  take Spectra next:
+                </BodyText>
+              </div>
+            </FadeInSection>
 
             <FadeInSection>
               <SlideImage

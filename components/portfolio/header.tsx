@@ -1,11 +1,18 @@
 "use client"; // Required for useState and useEffect hooks
 
 import Image from "next/image";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Briefcase, FlaskConical } from "lucide-react";
 import { useState, useEffect } from "react";
 
+const words = ["designing", "researching", "building"];
+
+const navLinks = [
+  { label: "Projects", href: "#projects" },
+  { label: "About Me", href: "#about" },
+  { label: "Resume", href: "/resume.pdf", external: true },
+];
+
 export function Header() {
-  const words = ["builder", "thinker", "designer", "dreamer"];
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [fadeState, setFadeState] = useState("translate-y-0 opacity-100");
 
@@ -33,8 +40,10 @@ export function Header() {
   }, []);
 
   return (
-    <header className="relative w-full min-h-screen overflow-hidden px-6 sm:px-8 bg-white flex items-center">
-      
+    <header
+      className="relative w-full min-h-screen overflow-hidden px-6 sm:px-8 bg-white flex items-center"
+    >
+
       {/* 1. THE GRADIENT LAYER (Fixed at the bottom) */}
       <div className="mesh-gradient-container" />
 
@@ -61,6 +70,23 @@ export function Header() {
         </span>
       </div>
 
+      {/* Top-right navigation — vertically centered against the logo row */}
+      <nav
+        aria-label="Primary"
+        className="absolute top-8 right-8 z-30 hidden h-12 items-center gap-8 sm:flex sm:h-14"
+      >
+        {navLinks.map((link) => (
+          <a
+            key={link.label}
+            href={link.href}
+            className="text-[15px] tracking-wide text-neutral-500 transition-colors hover:text-[#8b2284]"
+            {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          >
+            {link.label}
+          </a>
+        ))}
+      </nav>
+
       <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-10 md:flex-row md:items-center md:justify-center md:gap-16 z-10">
         
         {/* Left Side: Text */}
@@ -75,18 +101,34 @@ export function Header() {
           </p>
           
           {/* Main Description with shifting word container */}
-<p className="max-w-md text-base leading-relaxed text-neutral-700 sm:text-lg">
-  a
-  <span className="inline-block overflow-hidden h-[1.3em] min-w-[90px] align-middle relative top-[1px] pl-3">
-    <span
-      className={`absolute inset-x-0 bottom-[-1px] pl-3 font-medium italic text-[#8b2284] pr-2 transform transition-all duration-300 ease-in-out ${fadeState}`}
-    >
-      {words[currentWordIndex]}
-    </span>
-  </span>
-  passionate about leveraging human-computer interaction and cognitive insight
-  to turn abstract ideas into user-first realities.
-</p>
+          <p className="max-w-md text-base leading-relaxed text-neutral-700 sm:text-lg">
+            a product designer at UC Berkeley
+            <br />
+            <span className="relative inline-block overflow-hidden h-[1.3em] align-middle top-[1px] pr-1.5">
+              {/* Invisible copy sizes the slot to the current word */}
+              <span aria-hidden="true" className="invisible font-medium italic">
+                {words[currentWordIndex]}
+              </span>
+              <span
+                className={`absolute inset-x-0 bottom-[-1px] font-medium italic text-[#8b2284] transform transition-all duration-300 ease-in-out ${fadeState}`}
+              >
+                {words[currentWordIndex]}
+              </span>
+            </span>
+            technology that feels intuitive and human.
+          </p>
+
+          {/* Experience context line */}
+          <div className="flex flex-col gap-2 text-sm text-neutral-500 md:flex-row md:items-center md:gap-8">
+            <span className="inline-flex items-start gap-2">
+              <FlaskConical className="mt-[3px] h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              Currently: Research Assistant at the CoDesign Lab
+            </span>
+            <span className="inline-flex items-start gap-2">
+              <Briefcase className="mt-[3px] h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              Previously: AI Product Intern at GlobalLogic
+            </span>
+          </div>
           <div className="animate-fade-in pt-4 flex flex-wrap items-center gap-4">
             <a
               href="#projects"

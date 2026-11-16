@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Instrument_Serif, Source_Sans_3 } from 'next/font/google'
+import { Caveat_Brush, Instrument_Serif, Source_Sans_3 } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
@@ -9,9 +9,16 @@ const instrumentSerif = Instrument_Serif({
   variable: "--font-serif"
 });
 
-const sourceSans = Source_Sans_3({ 
+const sourceSans = Source_Sans_3({
   subsets: ["latin"],
   variable: "--font-sans"
+});
+
+// Handwritten display font for the "hello!" heading (.font-marker)
+const caveatBrush = Caveat_Brush({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-marker"
 });
 
 export const metadata: Metadata = {
@@ -64,7 +71,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${instrumentSerif.variable} ${sourceSans.variable}`}>
+    <html lang="en" className={`${instrumentSerif.variable} ${sourceSans.variable} ${caveatBrush.variable}`}>
       <body className="font-sans antialiased relative">
         <div className="pointer-events-none fixed inset-0 z-[-1] h-full w-full bg-[radial-gradient(rgba(200,200,210,0.45)_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.28]" aria-hidden />
         {children}
